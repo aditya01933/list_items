@@ -1,0 +1,67 @@
+<div class="container">
+  <div class="row">
+    <div class="col-md-12">
+      <div class="panel">
+        <div class="panel-heading">
+          <div class="row">
+            <div class="col-xs-12">
+              <h4 class="text-success"><%= page_head %> List Items</h4>
+            </div>
+          </div>
+          <hr>
+        </div>
+        <div class="panel-body">
+          <div class="row">
+            <div class="col-lg-12">
+              
+              <% cache @all_list_items do %>
+                <div class="list-group">
+                  <% @all_list_items.each do |list| %>
+                    <% cache list do %>
+                      <li class="list-group-item list-group-item-success"><%= list.title %>|
+                        <%= link_to 'Hard Delete', "/list_items/#{list.id}", method: :delete %>|
+                        
+                        <% if parent == :index %>
+                          <%= link_to 'Soft Delete', "/list_items/soft_delete/#{list.id}",
+                          method: :delete%>|
+                          <%= link_to 'edit list', edit_list_path(list)%>|
+                          <%= link_to 'new item',  new_list_item_path(list)%>
+                            
+                          </li>
+                        <% elsif parent == :thrash %>
+                          <%= link_to 'Recover', "/list_items/recover/#{list.id}",
+                            method: :put%>
+                        <% end %>
+
+                        <!-- This could go into view helper/view decorator -->
+                        <% items = parent == :index ? list.items : list.deleted_items %>
+                        <% cache items do %>
+
+                        <% items.each do |item| %>
+                          <% cache item do %>
+                            <li class="list-group-item"><%= item.title %>|
+                              <%= link_to 'Hard Delete', list_item_path(list, item), method: :delete %>|
+
+                              <% if parent == :index %>
+                                <%= link_to 'Soft Delete', "/lists/#{list.id}/items/soft_delete/#{item.id}",
+                                method: :delete%>|
+                                <%= link_to 'edit item',  edit_list_item_path(list, item)%>
+                                </li>
+                              <% elsif parent == :thrash %>
+                                <%= link_to 'Recover', "/lists/#{list.id}/items/recover/#{item.id}",
+                                  method: :put%>
+                              <% end %>
+                          <% end %>
+                        <% end %>
+                      <% end %>
+                    <% end -%>
+                  <% end %>
+                </div>
+              <% end %>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
